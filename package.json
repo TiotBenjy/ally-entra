@@ -9,10 +9,8 @@
   "type": "module",
   "files": [
     "src",
-    "providers",
     "build/src",
     "build/stubs",
-    "build/providers",
     "build/index.js",
     "build/index.d.ts",
     "build/configure.js",
@@ -20,7 +18,6 @@
   ],
   "exports": {
     ".": "./build/index.js",
-    "./entra_id_provider": "./build/providers/entra_id_provider.js",
     "./types": "./build/types/main.js"
   },
   "scripts": {
