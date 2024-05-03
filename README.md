@@ -30,7 +30,7 @@ const allyConfig = defineConfig({
     authorizationEndpoint: env.get('ENTRA_ID_AUTH_ENDPOINT'),
     scopes: ['openid', 'email'],
     // tenantId not required if authorizationEndpoint is :
-    // 'common' or 'organizations' or 'consumers' 
+    // 'common' or 'organizations' or 'consumers'
     tenantId: env.get('ENTRA_ID_TENANT_ID'),
   }),
 })

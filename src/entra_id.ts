@@ -1,7 +1,7 @@
 import { Oauth2Driver } from '@adonisjs/ally'
 import type { HttpContext } from '@adonisjs/core/http'
 import type { ApiRequestContract, RedirectRequestContract } from '@adonisjs/ally/types'
-import { EntraIdDriverConfig, EntraIdScopes, EntraIdToken } from './types/main.js'
+import { EntraIdDriverConfig, EntraIdScopes, EntraIdToken, UserFields } from './types/main.js'
 
 export class EntraIdDriver extends Oauth2Driver<EntraIdToken, EntraIdScopes> {
   /**
@@ -73,19 +73,6 @@ export class EntraIdDriver extends Oauth2Driver<EntraIdToken, EntraIdScopes> {
   ) {
     super(ctx, config)
 
-    /**
-     * Extremely important to call the following method to clear the
-     * state set by the redirect request.
-     *
-     * DO NOT REMOVE THE FOLLOWING LINE
-     */
-    this.loadState()
-
-    // Perform stateless authentication. Only applicable for an Oauth2 client.
-    this.stateless()
-  }
-
-  protected configureRedirectRequest(request: RedirectRequestContract<EntraIdScopes>) {
     if (this.config.authorizationEndpoint === 'tenant') {
       // check if tenantId is defined
       if (!this.config.tenantId) {
@@ -102,9 +89,21 @@ export class EntraIdDriver extends Oauth2Driver<EntraIdToken, EntraIdScopes> {
       )
     }
 
-    request.param('client_id', this.config.clientId)
+    /**
+     * Extremely important to call the following method to clear the
+     * state set by the redirect request.
+     *
+     * DO NOT REMOVE THE FOLLOWING LINE
+     */
+    this.loadState()
+
+    // Perform stateless authentication. Only applicable for an Oauth2 client.
+    this.stateless()
+  }
+
+  protected configureRedirectRequest(request: RedirectRequestContract<EntraIdScopes>) {
+    // client_id and redirect_uri are already set by the base class
     request.param('response_type', 'code')
-    request.param('redirect_uri', this.config.callbackUrl)
     request.scopes(this.config.scopes || ['openid', 'profile', 'email', 'offline_access'])
     request.param('response_mode', 'query')
   }
@@ -123,15 +122,16 @@ export class EntraIdDriver extends Oauth2Driver<EntraIdToken, EntraIdScopes> {
   /**
    * Fetches the user info from the Twitch API
    */
-  protected async getUserInfo(token: string, callback?: (request: ApiRequestContract) => void) {
+  protected async getUserInfo(
+    token: string,
+    callback?: (request: ApiRequestContract) => void
+  ): Promise<UserFields> {
     const request = this.getAuthenticatedRequest(this.userInfoUrl, token)
     if (typeof callback === 'function') {
       callback(request)
     }
 
     const user: any = await request.get()
-
-    console.log('user', user)
 
     return {
       id: user.id,
@@ -149,7 +149,7 @@ export class EntraIdDriver extends Oauth2Driver<EntraIdToken, EntraIdScopes> {
    * Find if the current error code is for access denied
    */
   accessDenied(): boolean {
-    const error = this.getError()
+    const error: string | null = this.getError()
     if (!error) {
       return false
     }
@@ -165,9 +165,13 @@ export class EntraIdDriver extends Oauth2Driver<EntraIdToken, EntraIdScopes> {
   /**
    * Returns details for the authorized user
    */
-  async user(callback?: (request: ApiRequestContract) => void) {
-    const token = await this.accessToken(callback)
-    const user = await this.getUserInfo(token.token, callback)
+  async user(callback?: (request: ApiRequestContract) => void): Promise<
+    UserFields & {
+      token: EntraIdToken
+    }
+  > {
+    const token: EntraIdToken = await this.accessToken(callback)
+    const user: UserFields = await this.getUserInfo(token.token, callback)
 
     return {
       ...user,
@@ -178,8 +182,15 @@ export class EntraIdDriver extends Oauth2Driver<EntraIdToken, EntraIdScopes> {
   /**
    * Finds the user by the access token
    */
-  async userFromToken(token: string, callback?: (request: ApiRequestContract) => void) {
-    const user = await this.getUserInfo(token, callback)
+  async userFromToken(
+    token: string,
+    callback?: (request: ApiRequestContract) => void
+  ): Promise<
+    UserFields & {
+      token: { token: string; type: 'bearer' }
+    }
+  > {
+    const user: UserFields = await this.getUserInfo(token, callback)
 
     return {
       ...user,
