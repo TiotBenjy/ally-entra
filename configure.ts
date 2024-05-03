@@ -17,7 +17,7 @@ export async function configure(command: Configure) {
       ENTRA_ID_CLIENT_ID: 'Env.schema.string()',
       ENTRA_ID_CLIENT_SECRET: 'Env.schema.string()',
       ENTRA_ID_CALLBACK_URL: 'Env.schema.string()',
-      ENTRA_ID_TENANT_ID: 'Env.schema.string().optional()',
+      ENTRA_ID_TENANT_ID: 'Env.schema.string.optional()',
     },
     leadingComment: 'Variables for @tiotbenjy/ally-entra-id provider',
   })
