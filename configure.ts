@@ -5,10 +5,10 @@ export async function configure(command: Configure) {
 
   await codemods.defineEnvVariables({
     ENTRA_ID_AUTH_ENDPOINT: 'tenant',
-    ENTRA_ID_CLIENT_ID: '<your_client_id>',
-    ENTRA_ID_CLIENT_SECRET: '<your_client_secret>',
-    ENTRA_ID_CALLBACK_URL: '<your_callback_url>',
-    ENTRA_ID_TENANT_ID: '<your_tenant_id>',
+    ENTRA_ID_CLIENT_ID: '',
+    ENTRA_ID_CLIENT_SECRET: '',
+    ENTRA_ID_CALLBACK_URL: '',
+    ENTRA_ID_TENANT_ID: '',
   })
 
   await codemods.defineEnvValidations({
