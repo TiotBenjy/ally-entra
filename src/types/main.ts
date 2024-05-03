@@ -18,7 +18,7 @@ export type EntraIdDriverConfig = Oauth2DriverConfig & {
   userInfoUrl?: string
   scopes?: LiteralStringUnion<EntraIdScopes>[]
   tenantId?: string
-  authorizationEndpoint?: 'common' | 'organizations' | 'consumers' | 'tenant'
+  authorizationEndpoint: 'common' | 'organizations' | 'consumers' | 'tenant'
 }
 
 export type EntraIdToken = {
@@ -52,7 +52,6 @@ export interface MicrosoftEntraIdProfile extends Record<string, any> {
   'surname': string
   'userPrincipalName': string
   'id': string
-  'profilePhotoSize'?: ProfilePhotoSize
 
   /** @default "common" */
   'tenantId'?: string
@@ -66,8 +65,6 @@ export interface UserFields extends Record<string, any> {
   name: string
   email: string | null
   emailVerificationState: 'verified' | 'unverified' | 'unsupported'
-  profilePhotoSize?: ProfilePhotoSize
-
   original: MicrosoftEntraIdProfile | null
 }
 
