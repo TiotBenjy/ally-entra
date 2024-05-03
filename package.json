@@ -1,7 +1,7 @@
 {
   "name": "@tiotbenjy/ally-entra-id",
   "description": "",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "node": ">=18.16.0"
   },
@@ -45,11 +45,10 @@
     "@adonisjs/ally": "^5.0.0-5",
     "@adonisjs/core": "^6.1.5-26"
   },
-  "author": "Romain Lanz <romain.lanz@pm.me>",
-  "license": "MIT",
+  "author": "TiotBenjy",
   "keywords": [
     "ally",
-    "twitch",
+    "entra-id",
     "adonis",
     "adonisjs",
     "oauth2",
