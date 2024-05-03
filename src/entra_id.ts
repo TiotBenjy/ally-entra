@@ -1,51 +1,47 @@
 import { Oauth2Driver } from '@adonisjs/ally'
 import type { HttpContext } from '@adonisjs/core/http'
 import type { ApiRequestContract, RedirectRequestContract } from '@adonisjs/ally/types'
-import type { EntraIdDriverConfig, EntraIdScopes, EntraIdToken } from './types/main.js'
+import { EntraIdDriverConfig, EntraIdScopes, EntraIdToken } from './types/main.js'
 
 export class EntraIdDriver extends Oauth2Driver<EntraIdToken, EntraIdScopes> {
   /**
    * The URL for the redirect request. The user will be redirected on this page
    * to authorize the request.
-   *
-   * Do not define query strings in this URL.
    */
-  protected authorizeUrl = 'https://login.microsoftonline.com/{authType}/oauth2/v2.0/authorize'
+  protected authorizeUrl: string =
+    'https://login.microsoftonline.com/{authType}/oauth2/v2.0/authorize'
 
   /**
-   * The URL to hit to exchange the authorization code for the access token
-   *
-   * Do not define query strings in this URL.
+   * The URL to hit to exchange the authorization code for the access token.
    */
-  protected accessTokenUrl = 'https://login.microsoftonline.com/{authType}/oauth2/v2.0/token'
+  protected accessTokenUrl: string =
+    'https://login.microsoftonline.com/{authType}/oauth2/v2.0/token'
 
   /**
    * The URL to hit to get the user details
-   *
-   * Do not define query strings in this URL.
    */
-  protected userInfoUrl = 'https://graph.microsoft.com/v1.0/me'
+  protected userInfoUrl: string = 'https://graph.microsoft.com/v1.0/me'
 
   /**
    * The param name for the authorization code. Read the documentation of your oauth
    * provider and update the param name to match the query string field name in
    * which the oauth provider sends the authorization_code post redirect.
    */
-  protected codeParamName = 'code'
+  protected codeParamName: string = 'code'
 
   /**
    * The param name for the error. Read the documentation of your oauth provider and update
    * the param name to match the query string field name in which the oauth provider sends
-   * the error post redirect
+   * the error post redirect.
    */
-  protected errorParamName = 'error_description'
+  protected errorParamName: string = 'error'
 
   /**
    * Cookie name for storing the CSRF token. Make sure it is always unique. So a better
-   * approach is to prefix the oauth provider name to `oauth_state` value. For example:
-   * For example: "facebook_oauth_state"
+   * approach is to prefix the oauth provider name to `oauth_state` value. For example,
+   * For example, “facebook_oauth_state.”
    */
-  protected stateCookieName = 'entraid_oauth_state'
+  protected stateCookieName: string = 'entraid_oauth_state'
 
   /**
    * Parameter name to be used for sending and receiving the state from.
@@ -53,20 +49,21 @@ export class EntraIdDriver extends Oauth2Driver<EntraIdToken, EntraIdScopes> {
    * name to match the query string used by the provider for exchanging
    * the state.
    */
-  protected stateParamName = 'state'
+  protected stateParamName: string = 'state'
 
   /**
    * Parameter name for sending the scopes to the oauth provider.
    */
-  protected scopeParamName = 'scope'
+  protected scopeParamName: string = 'scope'
 
   /**
-   * The separator indentifier for defining multiple scopes
+   * The separator identifier for defining multiple scopes
    */
-  protected scopesSeparator = ' '
+  protected scopesSeparator: string = ' '
 
   /*
-   * Set the authorization endpoint
+   * Authorization endpoint (common, organizations, consumers, tenant)
+   * Included in this.config.authorizationEndpoint
    * @see https://learn.microsoft.com/en-us/entra/identity-platform/v2-protocols#endpoints
    */
 
@@ -76,12 +73,40 @@ export class EntraIdDriver extends Oauth2Driver<EntraIdToken, EntraIdScopes> {
   ) {
     super(ctx, config)
 
+    /**
+     * Extremely important to call the following method to clear the
+     * state set by the redirect request.
+     *
+     * DO NOT REMOVE THE FOLLOWING LINE
+     */
     this.loadState()
+
+    // Perform stateless authentication. Only applicable for an Oauth2 client.
+    this.stateless()
   }
 
   protected configureRedirectRequest(request: RedirectRequestContract<EntraIdScopes>) {
+    if (this.config.authorizationEndpoint === 'tenant') {
+      // check if tenantId is defined
+      if (!this.config.tenantId) {
+        throw new Error('Tenant ID is required when using the tenant authorization endpoint')
+      }
+
+      this.authorizeUrl = this.authorizeUrl.replace('{authType}', this.config.tenantId)
+      this.accessTokenUrl = this.accessTokenUrl.replace('{authType}', this.config.tenantId)
+    } else {
+      this.authorizeUrl = this.authorizeUrl.replace('{authType}', this.config.authorizationEndpoint)
+      this.accessTokenUrl = this.accessTokenUrl.replace(
+        '{authType}',
+        this.config.authorizationEndpoint
+      )
+    }
+
+    request.param('client_id', this.config.clientId)
+    request.param('response_type', 'code')
+    request.param('redirect_uri', this.config.callbackUrl)
     request.scopes(this.config.scopes || ['openid', 'profile', 'email', 'offline_access'])
-    // todo: implement this
+    request.param('response_mode', 'query')
   }
 
   /**
@@ -89,7 +114,8 @@ export class EntraIdDriver extends Oauth2Driver<EntraIdToken, EntraIdScopes> {
    */
   protected getAuthenticatedRequest(url: string, token: string) {
     const request = this.httpClient(url)
-    // todo: implement this
+    request.header('Authorization', `Bearer ${token}`)
+    request.header('Accept', 'application/json')
     request.parseAs('json')
     return request
   }
@@ -103,19 +129,19 @@ export class EntraIdDriver extends Oauth2Driver<EntraIdToken, EntraIdScopes> {
       callback(request)
     }
 
-    // const body = await request.get()
-    // const user = body.data[0]
+    const user: any = await request.get()
 
-    // todo: implement this
+    console.log('user', user)
 
     return {
-      id: '',
-      nickName: 'user.login',
-      name: 'user.display_name',
-      email: 'user.email',
+      id: user.id,
+      nickName: user.id,
+      displayName: user.displayName,
+      avatarUrl: null,
+      name: `${user.givenName}${user.surname ? ` ${user.surname}` : ''}`,
+      email: user.mail ? (user.mail as string) : (null as null),
       emailVerificationState: 'unsupported' as const,
-      avatarUrl: 'user.profile_image_url',
-      original: 'user',
+      original: user,
     }
   }
 
@@ -128,7 +154,12 @@ export class EntraIdDriver extends Oauth2Driver<EntraIdToken, EntraIdScopes> {
       return false
     }
 
-    return error === 'access_denied'
+    return (
+      error === 'access_denied' ||
+      error === 'invalid_grant' ||
+      error === 'unauthorized' ||
+      error === 'forbidden'
+    )
   }
 
   /**
