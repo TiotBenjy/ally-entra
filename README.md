@@ -36,6 +36,38 @@ const allyConfig = defineConfig({
 })
 ```
 
+And you can now use the `ally` instance into routes files `start/routes.ts`.
+
+```ts
+// start/routes.ts
+import router from '@adonisjs/core/services/router'
+
+router.get('/login', async ({ ally }) => {
+  return ally.use('entra').redirect()
+})
+
+router.get('/entra/callback', async ({ ally }) => {
+  const entra = ally.use('entra')
+
+  /**
+   * User has denied access by canceling
+   * the login flow
+   */
+  if (entra.accessDenied()) {
+    return 'You have cancelled the login process or did not grant access to your profile'
+  }
+
+  /**
+   * Microsoft responded with some error
+   */
+  if (entra.hasError()) {
+    return entra.getError()
+  }
+
+  const user = await entra.user()
+})
+```
+
 ## Work based on
 
 - [AdonisJS Ally](https://v6-alpha.adonisjs.com/docs/social_auth)
