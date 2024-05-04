@@ -1,7 +1,7 @@
 {
   "name": "@tiotbenjy/ally-entra-id",
   "description": "",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "engines": {
     "node": ">=18.16.0"
   },
