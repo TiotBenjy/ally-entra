@@ -1,5 +1,11 @@
 `@tiotbenjy/ally-entra-id` is a Entra ID driver for [AdonisJS Ally](https://docs.adonisjs.com/guides/social-auth).
 
+<p align="center">
+  <a href="https://www.npmjs.com/package/@tiotbenjy/ally-entra-id"><img src="https://img.shields.io/npm/dm/@tiotbenjy/ally-entra-id.svg?style=flat-square" alt="Download"></a>
+  <a href="https://www.npmjs.com/package/@tiotbenjy/ally-entra-id"><img src="https://img.shields.io/npm/v/@tiotbenjy/ally-entra-id.svg?style=flat-square" alt="Version"></a>
+</p>
+
+
 ## Getting Started
 
 This package is available in the npm registry.
