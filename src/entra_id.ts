@@ -111,16 +111,20 @@ export class EntraIdDriver extends Oauth2Driver<EntraIdToken, EntraIdScopes> {
   /**
    * Returns the HTTP request with the authorization header set
    */
-  protected getAuthenticatedRequest(url: string, token: string) {
+  protected getAuthenticatedRequest(
+    url: string,
+    token: string,
+    parseAs?: 'json' | 'buffer' | 'text'
+  ) {
     const request = this.httpClient(url)
     request.header('Authorization', `Bearer ${token}`)
     request.header('Accept', 'application/json')
-    request.parseAs('json')
+    request.parseAs(parseAs ?? 'json')
     return request
   }
 
   /**
-   * Fetches the user info from the Twitch API
+   * Fetches the user info from the Microsoft Graph API
    */
   protected async getUserInfo(
     token: string,
@@ -132,12 +136,13 @@ export class EntraIdDriver extends Oauth2Driver<EntraIdToken, EntraIdScopes> {
     }
 
     const user: any = await request.get()
+    const avatarUrl: string | null = await this.getUserProfilePicture(token)
 
     return {
       id: user.id,
       nickName: user.id,
       displayName: user.displayName,
-      avatarUrl: null,
+      avatarUrl: avatarUrl,
       name: `${user.givenName}${user.surname ? ` ${user.surname}` : ''}`,
       email: user.mail ? (user.mail as string) : (null as null),
       emailVerificationState: 'unsupported' as const,
@@ -195,6 +200,29 @@ export class EntraIdDriver extends Oauth2Driver<EntraIdToken, EntraIdScopes> {
     return {
       ...user,
       token: { token, type: 'bearer' as const },
+    }
+  }
+
+  /**
+   * Get the user profile picture from the Microsoft Graph API
+   */
+  async getUserProfilePicture(token: string): Promise<string | null> {
+    try {
+      const profilePictureSize: number = this.config.profilePictureSize || 48
+
+      const urlToCall = `${this.userInfoUrl}/photos/${profilePictureSize}x${profilePictureSize}/$value`
+
+      const request = this.getAuthenticatedRequest(urlToCall, token, 'buffer')
+      const response = await request.get()
+
+      let image = null
+      if (response) {
+        const decoded: string = Buffer.from(response).toString('base64')
+        image = `data:image/jpeg;base64, ${decoded}`
+      }
+      return image
+    } catch (e) {
+      return null
     }
   }
 }

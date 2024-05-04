@@ -19,6 +19,7 @@ export type EntraIdDriverConfig = Oauth2DriverConfig & {
   scopes?: LiteralStringUnion<EntraIdScopes>[]
   tenantId?: string
   authorizationEndpoint: 'common' | 'organizations' | 'consumers' | 'tenant'
+  profilePictureSize?: ProfilePictureSize
 }
 
 export type EntraIdToken = {
@@ -73,4 +74,4 @@ export interface UserFields extends Record<string, any> {
  *
  * @default 48
  */
-export type ProfilePhotoSize = 48 | 64 | 96 | 120 | 240 | 360 | 432 | 504 | 648
+export type ProfilePictureSize = 48 | 64 | 96 | 120 | 240 | 360 | 432 | 504 | 648
