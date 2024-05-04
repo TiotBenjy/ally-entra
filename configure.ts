@@ -13,7 +13,8 @@ export async function configure(command: Configure) {
 
   await codemods.defineEnvValidations({
     variables: {
-      ENTRA_ID_AUTH_ENDPOINT: 'Env.schema.enum(["common", "organizations", "consumers", "tenant"])',
+      ENTRA_ID_AUTH_ENDPOINT:
+        "Env.schema.enum(['common', 'organizations', 'consumers', 'tenant'] as const)",
       ENTRA_ID_CLIENT_ID: 'Env.schema.string()',
       ENTRA_ID_CLIENT_SECRET: 'Env.schema.string()',
       ENTRA_ID_CALLBACK_URL: 'Env.schema.string()',
