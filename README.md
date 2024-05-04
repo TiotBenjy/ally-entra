@@ -76,6 +76,6 @@ router.get('/entra/callback', async ({ ally }) => {
 
 ## Work based on
 
-- [AdonisJS Ally](https://v6-alpha.adonisjs.com/docs/social_auth)
+- [AdonisJS Ally](https://docs.adonisjs.com/guides/social-auth)
 - [adonis-ally-azure-ad](https://github.com/AlexanderYW/adonis-ally-azure-ad/tree/main)
 - [@rlanz/ally-twitch](https://github.com/RomainLanz/ally-twitch)
