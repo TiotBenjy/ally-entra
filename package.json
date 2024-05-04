@@ -60,5 +60,15 @@
   },
   "dependencies": {
     "@poppinss/utils": "^6.7.3"
+  },
+  "publishConfig": {
+    "access": "public",
+    "tag": "latest"
+  },
+  "np": {
+    "message": "chore(release): %s",
+    "tag": "latest",
+    "branch": "main",
+    "anyBranch": false
   }
 }
