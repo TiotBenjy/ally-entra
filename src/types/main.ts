@@ -53,6 +53,7 @@ export interface MicrosoftEntraIdProfile extends Record<string, any> {
   'surname': string
   'userPrincipalName': string
   'id': string
+  'roles': string[]
 
   /** @default "common" */
   'tenantId'?: string
@@ -66,6 +67,7 @@ export interface UserFields extends Record<string, any> {
   name: string
   email: string | null
   emailVerificationState: 'verified' | 'unverified' | 'unsupported'
+  roles: string[]
   original: MicrosoftEntraIdProfile | null
 }
 

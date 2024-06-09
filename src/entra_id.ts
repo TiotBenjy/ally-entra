@@ -146,6 +146,7 @@ export class EntraIdDriver extends Oauth2Driver<EntraIdToken, EntraIdScopes> {
       name: `${user.givenName}${user.surname ? ` ${user.surname}` : ''}`,
       email: user.mail ? (user.mail as string) : (null as null),
       emailVerificationState: 'unsupported' as const,
+      roles: user.roles || [],
       original: user,
     }
   }
