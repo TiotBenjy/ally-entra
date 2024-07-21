@@ -5,7 +5,6 @@
   <a href="https://www.npmjs.com/package/@tiotbenjy/ally-entra-id"><img src="https://img.shields.io/npm/v/@tiotbenjy/ally-entra-id.svg?style=flat-square" alt="Version"></a>
 </p>
 
-
 ## Getting Started
 
 This package is available in the npm registry.
@@ -30,6 +29,7 @@ import env from '#start/env'
 
 const allyConfig = defineConfig({
   entra: entraId({
+    driver: 'entra',
     clientId: env.get('ENTRA_ID_CLIENT_ID'),
     clientSecret: env.get('ENTRA_ID_CLIENT_SECRET'),
     callbackUrl: env.get('ENTRA_ID_CALLBACK_URL'),
