@@ -4,61 +4,33 @@ import type { ApiRequestContract, RedirectRequestContract } from '@adonisjs/ally
 import { EntraIdDriverConfig, EntraIdScopes, EntraIdToken, UserFields } from './types/main.js'
 
 export class EntraIdDriver extends Oauth2Driver<EntraIdToken, EntraIdScopes> {
-  /**
-   * The URL for the redirect request. The user will be redirected on this page
-   * to authorize the request.
-   */
+  //The URL for the redirect request.
   protected authorizeUrl: string =
     'https://login.microsoftonline.com/{authType}/oauth2/v2.0/authorize'
 
-  /**
-   * The URL to hit to exchange the authorization code for the access token.
-   */
+  //The URL to hit to exchange the authorization code for the access token.
   protected accessTokenUrl: string =
     'https://login.microsoftonline.com/{authType}/oauth2/v2.0/token'
 
-  /**
-   * The URL to hit to get the user details
-   */
+  //The URL to hit to get the user details.
   protected userInfoUrl: string = 'https://graph.microsoft.com/v1.0/me'
 
-  /**
-   * The param name for the authorization code. Read the documentation of your oauth
-   * provider and update the param name to match the query string field name in
-   * which the oauth provider sends the authorization_code post redirect.
-   */
+  //The param name for the authorization code. Read the documentation of oauth provider
   protected codeParamName: string = 'code'
 
-  /**
-   * The param name for the error. Read the documentation of your oauth provider and update
-   * the param name to match the query string field name in which the oauth provider sends
-   * the error post redirect.
-   */
+  // The param name for the error.
   protected errorParamName: string = 'error'
 
-  /**
-   * Cookie name for storing the CSRF token. Make sure it is always unique. So a better
-   * approach is to prefix the oauth provider name to `oauth_state` value. For example,
-   * For example, “facebook_oauth_state.”
-   */
+  //Cookie name for storing the CSRF token./
   protected stateCookieName: string = 'entraid_oauth_state'
 
-  /**
-   * Parameter name to be used for sending and receiving the state from.
-   * Read the documentation of your oauth provider and update the param
-   * name to match the query string used by the provider for exchanging
-   * the state.
-   */
+  //Parameter name to be used for sending and receiving the state from.
   protected stateParamName: string = 'state'
 
-  /**
-   * Parameter name for sending the scopes to the oauth provider.
-   */
+  //Parameter name for sending the scopes to the oauth provider.
   protected scopeParamName: string = 'scope'
 
-  /**
-   * The separator identifier for defining multiple scopes
-   */
+  // The separator identifier for defining multiple scopes
   protected scopesSeparator: string = ' '
 
   /*
